@@ -14,7 +14,7 @@ Project for CS452 Database Modeling Class, trying to help Operation Literacy wit
     * Documentation and Future Insertability Finished
 
 ## Rough ERD Sketch
-![ERD Sketch](ERDRough.png)
+![ERD Sketch](ERDRough.jpeg)
 
 ## Rough System Design
-![System Design Sketch](SystemDesignSketch.png)
+![System Design Sketch](SystemDesignSketch.jpeg)
