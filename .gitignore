@@ -1,0 +1,14 @@
+# Ignore node_modules inside all subfolders
+**/node_modules/
+
+# Ignore build artifacts
+**/dist/
+**/build/
+
+# Ignore environment files (if using API keys, etc.)
+**/.env
+**/.env.local
+
+# Ignore dependency lock files if needed (optional)
+**/package-lock.json
+**/yarn.lock
