@@ -25,8 +25,8 @@ function App() {
               </menu>
             </nav>
           </header>
-          <div class="body">
-            <h1 class="page-title"> This website hasn't really been implemented yet. So...Thanks for stopping by I guess. 😛 </h1>
+          <div className="body">
+            <h1 className="page-title"> This website hasn't really been implemented yet. So...Thanks for stopping by I guess. 😛 </h1>
             <button onClick={logout}>Logout</button>
           </div>
         </div>
@@ -41,10 +41,20 @@ function App() {
               </menu>
             </nav>
           </header>
-          <div class="body">
-            <h1 class="page-title"> Welcome to the Story-Registration Access! </h1>
-            <p>Login to access registration information.</p>
-            <button onClick={login}>Login</button>
+          <div className="body">
+            <h1 className="page-title"> Welcome to the Story-Con Registration Access! </h1>
+            <p>Please Login to access Registration Information.</p>
+            <form id="login-form">
+              <div className="form-group" id="form-field">
+                <label htmlFor="email">Email:</label>
+                <input type="email" className="form-control" id="email" placeholder="Your Email Here"/>
+              </div>
+              <div className="form-group" id="form-field">
+                <label htmlFor="password">Password:</label>
+                <input type="password" className="form-control" id="password" placeholder="Your Password Here"/>
+              </div>
+              <button id="login-button" type="submit" className="btn btn-primary" onClick={login}>Login</button>
+            </form>
           </div>
         </div>
       )}

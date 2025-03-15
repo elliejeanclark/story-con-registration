@@ -3,11 +3,50 @@
     justify-content: space-between;
     align-items: center;
     padding: 0.5rem;
-    background-color: #f8f9fa;
+    background-color: rgb(133, 196, 255);
 }
 
 .page-title {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 1.5rem;
+}
+
+.app {
+    font-family: Helvetica, Arial, Sans-Serif;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    background-color: aliceblue;
+}
+
+#login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid black;
+    border-radius: 0.5rem;
+}
+
+#login-button {
+    background-color: rgb(133, 196, 255);
+    border: 1px solid black;
+    border-radius: 0.5rem;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+    cursor: pointer;
+}
+
+#form-field {
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
 }
