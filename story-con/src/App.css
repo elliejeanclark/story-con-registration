@@ -1,9 +1,14 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
 #head-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0.5rem;
-    background-color: rgb(133, 196, 255);
+    background-color: #86B6A9;
 }
 
 .page-title {
@@ -15,9 +20,11 @@
 
 .app {
     font-family: Helvetica, Arial, Sans-Serif;
+    color: #264653;
     display: flex;
     flex-direction: column;
     flex: 1;
+    min-height: 100vh;
 }
 
 .body {
@@ -25,7 +32,8 @@
     flex-direction: column;
     align-items: center;
     padding: 1rem;
-    background-color: aliceblue;
+    background-color: #F5F9FC;
+    flex: 1;
 }
 
 #login-form {
@@ -33,12 +41,14 @@
     flex-direction: column;
     align-items: center;
     padding: 1rem;
-    border: 1px solid black;
     border-radius: 0.5rem;
+    background-color: white;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #D4EAE4;
 }
 
 #login-button {
-    background-color: rgb(133, 196, 255);
+    background-color: #3A5A78;
     border: 1px solid black;
     border-radius: 0.5rem;
     padding-left: 2.5rem;
@@ -49,4 +59,18 @@
 #form-field {
     margin-bottom: 0.5rem;
     padding: 0.5rem;
+}
+
+footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    background-color: #86B6A9;
+}
+
+.story-con-link {
+    color: #3A5A78;
+    text-decoration: none;
+    cursor: pointer;
 }
