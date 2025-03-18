@@ -45,6 +45,7 @@ html, body {
     background-color: white;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
     border: 1px solid #D4EAE4;
+    margin-top: 2rem;
 }
 
 #login-button {

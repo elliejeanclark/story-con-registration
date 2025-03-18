@@ -30,7 +30,7 @@ function App() {
             <button onClick={logout}>Logout</button>
           </div>
           <footer className="footer">
-            <p className="footer-text">Made by the Elinor Clark 2025</p>
+            <p className="footer-text">Made by Elinor Clark 2025</p>
           </footer>
         </div>
       ) : (
