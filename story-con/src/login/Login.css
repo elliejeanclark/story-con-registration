@@ -1,3 +1,8 @@
+html, body {
+    height: 100%;
+    margin: 0;;
+}
+
 .page-title {
     display: flex;
     justify-content: center;
@@ -11,7 +16,7 @@
     align-items: center;
     padding: 1rem;
     background-color: #F5F9FC;
-    flex: 1;
+    flex-grow: 1;
 }
 
 #login-form {

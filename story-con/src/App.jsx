@@ -6,7 +6,7 @@ import './App.css';
 
 function App() {
   return (
-    <div>
+    <div className="app">
       {/* Header */}
       <header className="header">
         <nav className="navbar navbar-expand-lg" id="head-nav">

@@ -6,11 +6,8 @@ import './Login.css';
 function LoginPage() {
 
     const { login } = useAuth(); 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
 
     return (
-        <div className="app">
         <div className="body">
           <h1 className="page-title"> Register for Adorable Petite Dino's! </h1>
           <h5>Please Login or Sign Up to Get Started!</h5>
@@ -34,7 +31,6 @@ function LoginPage() {
             <form>
             </form>
           </div>
-        </div>
       </div>
     );
 }
