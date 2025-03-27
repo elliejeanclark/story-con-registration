@@ -44,3 +44,48 @@
 .form-check {
     margin: 10px;
 }
+
+#gala-guest-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+}
+
+.gala-guest-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: last baseline;
+}
+
+#add-guest-button {
+    background-color: #86B6A9;
+    border: 1px solid black;
+    border-radius: 0.5rem;
+    width: 200px;
+    height: 40px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#add-guest-button:hover {
+    background-color: #7ba59a;
+}
+
+#remove-guest-button {
+    background-color: #b68986;
+    border: 1px solid black;
+    border-radius: 0.5rem;
+    width: 200px;
+    height: 40px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin-left: 5px;
+}
+
+#remove-guest-button:hover {
+    background-color: #a76f6f;
+}
