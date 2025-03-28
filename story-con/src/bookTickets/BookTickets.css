@@ -134,3 +134,20 @@
 #add-masterclass-button:hover {
     background-color: #7ba59a;
 }
+
+#price-text {
+    font-size: 1.5rem;
+    font-style: italic;
+    margin: 10px;
+}
+
+#price-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#price-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+}

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import './BookTickets.css';
 
 function BookTicketsPage() {
@@ -23,6 +23,7 @@ function BookTicketsPage() {
     const [numBookVouchers, setNumBookVouchers] = useState(0);
     const [showShirtSizeInfo, setShowShirtSizeInfo] = useState(false);
     const [shirtSize, setShirtSize] = useState('');
+    const [price, setPrice] = useState(0);
 
     const masterclassOptions = [
         { value: "masterclass1", label: "Masterclass 1" },
@@ -110,7 +111,52 @@ function BookTicketsPage() {
         setMasterclasses([{id: 1, className: ''}]);
         setNumBookVouchers(0);
         setShirtSize('');
+        calculatePrice();
     }
+
+    const calculatePrice = useCallback(() => {
+        let calculatedPrice = 0;
+        if (ticketType === "generalAdmission") calculatedPrice += 150;
+        else if (ticketType === "tweenAuthorPassMorning" || ticketType === "tweenAuthorPassAfternoon") calculatedPrice += 50;
+        else if (ticketType === "teenAuthorPass") calculatedPrice += 100;
+        else if (ticketType === "educatorPass") calculatedPrice += 125;
+        else if (ticketType === "freeTeacherChaperonePass") calculatedPrice += 0;
+        else if (ticketType === "influencerPass") calculatedPrice += 200;
+        else if (ticketType === "bookstoreLibrarianPass") calculatedPrice += 75;
+        else if (ticketType === "exhibitHall") calculatedPrice += 25;
+
+        if (isGeneralAdmissionGalaChecked) calculatedPrice += 50;
+        if (isVIPPlusGalaChecked) calculatedPrice += 100;
+        if (isGeneralAdmissionGalaGuestChecked) calculatedPrice += 50 * galaGuests.length;
+        if (isAllAccessMasterclassChecked) calculatedPrice += 150;
+        if (isMasterclassChecked) calculatedPrice += 50 * masterclasses.length;
+        if (isAgentEditorPitchSessionChecked) calculatedPrice += 100;
+        if (isTShirtChecked) calculatedPrice += 25;
+        if (isLeatherNotebookChecked) calculatedPrice += 35;
+        if (isBookVoucherChecked) calculatedPrice += 20 * numBookVouchers;
+        if (isEducatorBreakfastChecked) calculatedPrice += 100;
+
+        setPrice(calculatedPrice);
+    }, [
+        ticketType,
+        isGeneralAdmissionGalaChecked,
+        isVIPPlusGalaChecked,
+        isGeneralAdmissionGalaGuestChecked,
+        galaGuests,
+        isAllAccessMasterclassChecked,
+        isMasterclassChecked,
+        masterclasses,
+        isAgentEditorPitchSessionChecked,
+        isTShirtChecked,
+        isLeatherNotebookChecked,
+        isBookVoucherChecked,
+        numBookVouchers,
+        isEducatorBreakfastChecked
+    ]);
+
+    useEffect(() => {
+        calculatePrice();
+    }, [calculatePrice]);
 
     return (
         <div className="body">
@@ -130,11 +176,11 @@ function BookTicketsPage() {
                     <div>
                         <label htmlFor="ticket-type">Ticket Type</label>
                         <select className="form-control" id="ticket-type" onChange={handleTicketTypeChange}>
+                            <option value="generalAdmission">General Admission</option>
                             <option value="tweenAuthorPassMorning">Tween Author Pass Morning Session</option>
                             <option value="tweenAuthorPassAfternoon">Tween Author Pass Afternoon Session</option>
                             <option value="teenAuthorPass">Teen Author Pass</option>
                             <option value="educatorPass">Educator Pass</option>
-                            <option value="generalAdmission">General Admission</option>
                             <option value="freeTeacherChaperonePass">Free Teacher Chaperone Pass</option>
                             <option value="influencerPass">Influencer Pass</option>
                             <option value="bookstoreLibrarianPass">Bookstore or Librarian Pass</option>
@@ -148,52 +194,45 @@ function BookTicketsPage() {
                     <div id="first-five-addons">
                         <div className="form-check">
                             <input type="checkbox" className="form-check-input" id="generalAdmissionGala"
-                                disabled={
-                                    ticketType === "tweenAuthorPassMorning"
-                                    || ticketType === "tweenAuthorPassAfternoon"
-                                    || ticketType === "teenAuthorPass"
-                                    || ticketType === "freeTeacherChaperonePass"
-                                    || ticketType === "exhibitHall"
-                                    || ticketType === "influencerPass"
-                                    || isVIPPlusGalaChecked
-                                }
-                                onChange={(e) => {setGeneralAdmissionGalaChecked(e.target.checked)}}
+                                disabled={isVIPPlusGalaChecked}
+                                onChange={(e) => {
+                                    setGeneralAdmissionGalaChecked(e.target.checked);
+
+                                    if (!e.target.checked) {
+                                        setGeneralAdmissionGalaGuestChecked(false);
+                                        setShowGalaGuestInfo(false);
+                                        setGalaGuests([]);
+                                    }
+                                }}
                             />
                             <label className="form-check-label" htmlFor="generalAdmissionGala">Gala General Admission</label>
                         </div>
                         <div className="form-check">
                             <input type="checkbox" className="form-check-input" id="vipPlusGala"
-                                disabled={
-                                    ticketType === "tweenAuthorPassMorning"
-                                    || ticketType === "tweenAuthorPassAfternoon"
-                                    || ticketType === "teenAuthorPass"
-                                    || ticketType === "freeTeacherChaperonePass"
-                                    || ticketType === "exhibitHall"
-                                    || ticketType === "influencerPass"
-                                    || isGeneralAdmissionGalaChecked
-                                }
-                                onChange={(e) => {setVIPPlusGalaChecked(e.target.checked)}}
+                                disabled={isGeneralAdmissionGalaChecked}
+                                onChange={(e) => {
+                                    setVIPPlusGalaChecked(e.target.checked)
+                                    if (!e.target.checked) {
+                                        setGeneralAdmissionGalaGuestChecked(false);
+                                        setShowGalaGuestInfo(false);
+                                        setGalaGuests([]);
+                                    }
+                                }}
                             />
                             <label className="form-check-label" htmlFor="vipPlusGala">VIP Plus Gala Admission</label>
                         </div>
                         <div className="form-check">
                             <input type="checkbox" className="form-check-input" id="generalAdmissionGalaGuest" 
+                                checked={isGeneralAdmissionGalaGuestChecked}
                                 onChange={(e) => {
                                     setShowGalaGuestInfo(e.target.checked);
                                     if (!e.target.checked) {
                                         setGalaGuests([]);
                                     }
                                     setGeneralAdmissionGalaGuestChecked(e.target.checked);
+                                    setGalaGuests(e.target.checked ? [{ id: 1, name: '', email: '' }] : []);
                                 }}
-                                disabled={
-                                    ticketType === "tweenAuthorPassMorning"
-                                    || ticketType === "tweenAuthorPassAfternoon"
-                                    || ticketType === "teenAuthorPass"
-                                    || ticketType === "freeTeacherChaperonePass"
-                                    || ticketType === "exhibitHall"
-                                    || ticketType === "influencerPass"
-                                    || (!isGeneralAdmissionGalaChecked && !isVIPPlusGalaChecked)
-                                }
+                                disabled={(!isGeneralAdmissionGalaChecked && !isVIPPlusGalaChecked)}
                             />
                             <label className="form-check-label" htmlFor="generalAdmissionGalaGuest">General Admission Gala Guest</label>
                         </div>
@@ -219,16 +258,11 @@ function BookTicketsPage() {
                     <div id="second-five-addons">
                         <div className="form-check">
                             <input type="checkbox" className="form-check-input" id="agentEditorPitchSession" 
-                                disabled={
-                                    ticketType === "tweenAuthorPassMorning"
-                                    || ticketType === "tweenAuthorPassAfternoon"
-                                    || ticketType === "teenAuthorPass"
-                                    || ticketType === "freeTeacherChaperonePass"
-                                    || ticketType === "exhibitHall"
-                                    || ticketType === "influencerPass"
-                                    || isAllAccessMasterclassChecked
+                                disabled={ticketType === "tweenAuthorPassMorning"}
+                                onChange={(e) => {
+                                        setAgentEditorPitchSessionChecked(e.target.checked);
+                                    }
                                 }
-                                onChange={(e) => {setAgentEditorPitchSessionChecked(e.target.checked)}}
                             />
                             <label className="form-check-label" htmlFor="agentEditorPitchSession">Agent/Editor Pitch Session</label>
                         </div>
@@ -246,7 +280,11 @@ function BookTicketsPage() {
                         </div>
                         <div className="form-check">
                             <input type="checkbox" className="form-check-input" id="leatherNotebook"
-                                onChange={(e) => {setLeatherNotebookChecked(e.target.checked)}}
+                                onChange={
+                                    (e) => {
+                                        setLeatherNotebookChecked(e.target.checked);
+                                    }
+                                }
                             />
                             <label className="form-check-label" htmlFor="leatherNotebook">Commemerative Leather Notebook</label>
                         </div>
@@ -272,6 +310,7 @@ function BookTicketsPage() {
                                     || ticketType === "exhibitHall"
                                     || ticketType === "influencerPass"
                                     || ticketType === "generalAdmission"
+                                    || ticketType === "bookstoreLibrarianPass"
                                 }
                                 onChange={(e) => {
                                     setEducatorBreakfastChecked(e.target.checked);
@@ -353,7 +392,7 @@ function BookTicketsPage() {
                     </div>
                 )}
 
-                {showGalaGuestInfo && (ticketType === "educatorPass" || ticketType === "generalAdmission" || ticketType === "bookstoreLibrarianPass") && (
+                {showGalaGuestInfo && (
                     <div id="gala-guest-info">
                         {galaGuests.map((guest, index) => (
                             <div key={guest.id} className="gala-guest-row">
@@ -385,6 +424,13 @@ function BookTicketsPage() {
                         <button id="add-guest-button" type="button" onClick={addGuest}>➕ Add Guest</button>
                     </div>
                 )}
+
+                <div id="price">
+                    <p id="price-text">Price:</p>
+                    <div id="price-box">
+                        <p id="price-value">${price}</p>
+                    </div>
+                </div>
                 <button id="submit-button" type="submit" className="btn btn-primary">Submit</button>
             </form>
         </div>
