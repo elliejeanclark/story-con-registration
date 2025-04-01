@@ -1,8 +1,11 @@
 import React, {useState, useEffect, useCallback} from 'react';
+import { supabase } from '../lib/supabaseClient';
 import './BookTickets.css';
 
 function BookTicketsPage() {
-    const [ticketType, setTicketType] = useState('');
+    const [ticketType, setTicketType] = useState('selectType');
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
 
     const [isGeneralAdmissionGalaChecked, setGeneralAdmissionGalaChecked] = useState(false);
     const [isVIPPlusGalaChecked, setVIPPlusGalaChecked] = useState(false);
@@ -158,6 +161,19 @@ function BookTicketsPage() {
         calculatePrice();
     }, [calculatePrice]);
 
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        const ticketData = {
+            ticketType: ticketType,
+            datePurchased: new Date(),
+            cost: price,
+            nameUnder: document.getElementById('name').value
+        };
+
+        const { data, error } = await supabase.from('ticket').insert([ticketData]);
+    }
+
     return (
         <div className="body">
             <h1 className="page-title">Get Tickets Here!</h1>
@@ -165,17 +181,18 @@ function BookTicketsPage() {
                 <div id="basic-info">
                     <div className="form-group">
                         <label htmlFor="name">Name Ticket will be Under</label>
-                        <input type="text" className="form-control" id="name" placeholder='Name Here'/>
+                        <input type="text" className="form-control" id="name" placeholder='Name Here' onChange = {(e) => setName(e.target.value)}/>
                     </div>
                     <div className="form-group">
                         <label htmlFor="email">Email</label>
-                        <input type="email" className="form-control" id="email" placeholder='Email Here'/>
+                        <input type="email" className="form-control" id="email" placeholder='Email Here' onChange = {(e) => setEmail(e.target.value)}/>
                     </div>
                 </div>
                 <div id="ticket-type">
                     <div>
                         <label htmlFor="ticket-type">Ticket Type</label>
                         <select className="form-control" id="ticket-type" onChange={handleTicketTypeChange}>
+                            <option value="selectType">-- Select a Ticket Type --</option>
                             <option value="generalAdmission">General Admission</option>
                             <option value="tweenAuthorPassMorning">Tween Author Pass Morning Session</option>
                             <option value="tweenAuthorPassAfternoon">Tween Author Pass Afternoon Session</option>
@@ -431,7 +448,13 @@ function BookTicketsPage() {
                         <p id="price-value">${price}</p>
                     </div>
                 </div>
-                <button id="submit-button" type="submit" className="btn btn-primary">Submit</button>
+                <button id="submit-button" type="submit" className="btn btn-primary"
+                    disabled={
+                        ticketType === "selectType"
+                        || name === ''
+                        || email === ''
+                    }
+                >Submit</button>
             </form>
         </div>
     );
