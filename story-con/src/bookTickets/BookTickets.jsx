@@ -174,11 +174,13 @@ function BookTicketsPage() {
             email: email
         };
 
-        const { data , error } = await supabase.from('ticket').insert([ticketData]);
+        const { data , error } = await supabase.from('ticket').insert([ticketData]).select();
 
         if (error) {
             console.error('Error inserting ticket:', error.message);
             alert('Failed to book ticket. Please try again.');
+            setIsLoading(false);
+            return;
         }
         else {
             console.log('Ticket Successfully added:', data);
@@ -186,6 +188,78 @@ function BookTicketsPage() {
             setName('');
             setEmail('');
             setTicketType('selectType');
+        }
+
+        const ticketId = data[0].ticketID;
+
+
+        if (!data || data.length === 0) {
+            console.error('No ticket data returned.');
+            alert('Failed to book ticket. Please try again.');
+            return;
+        }
+
+        if (isGeneralAdmissionGalaChecked) {
+            const addOnData = {
+                type: "generalAdmissionGala",
+                cost: 50
+            }
+            
+            const { data, error } = await supabase.from('addOns').insert([addOnData]).select();
+
+            if (error) {
+                console.error('Error inserting add-on:', error.message);
+                alert('Failed to add add-on');
+                setIsLoading(false);
+                return;
+            }
+
+            console.log('Add-On Successfully added:', data);
+            setGeneralAdmissionGalaChecked(false);
+
+            if (!data || data.length === 0) {
+                console.error('No add-on data returned.');
+                alert('Failed to book ticket. Please try again.');
+                return;
+            }
+
+            const addOnIden = data[0].addOnID;
+
+            console.log('Ticket ID:', ticketId);
+            console.log('Add-On ID:', addOnIden);
+
+            const ticketAddOnData = {
+                ticketID: ticketId,
+                addOnID: addOnIden
+            };
+
+            await supabase.from('ticket_addOns').insert([ticketAddOnData]);
+        }
+        if (isVIPPlusGalaChecked) {
+            const addOnData = {
+                type: "vipPlusGala",
+                cost: 100
+            }
+
+            const { data, error } = await supabase.from('addOns').insert([addOnData]).select();
+
+            if (error) {
+                console.error('Error inserting add-on:', error.message);
+                alert('Failed to book ticket. Please try again.');
+            }
+            else {
+                console.log('Add-On Successfully added:', data);
+                setVIPPlusGalaChecked(false);
+            }
+
+            const addOnIden = data[0].addOnID;
+
+            const ticketAddOnData = {
+                ticketID: ticketId,
+                addOnID: addOnIden
+            };
+
+            await supabase.from('ticket_addOns').insert([ticketAddOnData]);
         }
 
         setIsLoading(false);
@@ -476,7 +550,7 @@ function BookTicketsPage() {
                 >
                     {isLoading ? "Booking..." : "Book Ticket"}
                 </button>
-                
+
                 {isLoading && (
                     <div className="loading-overlay">
                         <div className="spinner"></div>
