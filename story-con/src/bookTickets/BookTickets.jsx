@@ -166,6 +166,59 @@ function BookTicketsPage() {
         event.preventDefault();
         setIsLoading(true);
 
+        if (ticketType === 'selectType') {
+            alert('Please select a ticket type.');
+            setIsLoading(false);
+            return;
+        }
+        else if (name.trim() === '') {
+            alert('Please enter the name for the ticket.');
+            setIsLoading(false);
+            return;
+        }
+        else if (email.trim() === '') {
+            alert('Please enter an email address for the ticket.');
+            setIsLoading(false);
+            return;
+        }
+        else if (!/\S+@\S+\.\S+/.test(email)) {
+            // Simple email validation
+            alert('Please enter a valid email address.');
+            setIsLoading(false);
+            return;
+        }
+        else if (galaGuests.length > 0 && isGeneralAdmissionGalaGuestChecked) {
+            // Validate each gala guest's information
+            for (const guest of galaGuests) {
+                if (guest.name.trim() === '' || guest.email.trim() === '') {
+                    alert('Please fill out all guest information.');
+                    setIsLoading(false);
+                    return;
+                }
+                if (!/\S+@\S+\.\S+/.test(guest.email)) {
+                    alert('Please enter a valid email address for each guest.');
+                    setIsLoading(false);
+                    return;
+                }
+            }
+        }
+        else if (isMasterclassChecked && masterclasses.length > 0) {
+            for (const masterclass of masterclasses) {
+                if (masterclass.value === '' || masterclass.className.trim() === '') {
+                    alert('Please select a masterclass for each entry.');
+                    setIsLoading(false);
+                    return;
+                }
+            }
+        }
+        else if (isTShirtChecked && shirtSize === '') {
+            alert('Please select a shirt size for the T-Shirt add-on.');
+            setIsLoading(false);
+            return;
+        }
+
+        // Proceed with booking the ticket
+
         const ticketData = {
             ticketType: ticketType,
             datePurchased: new Date(),
@@ -184,7 +237,6 @@ function BookTicketsPage() {
         }
         else {
             console.log('Ticket Successfully added:', data);
-            alert('Ticket Successfully Booked!');
             setName('');
             setEmail('');
             setTicketType('selectType');
@@ -262,7 +314,6 @@ function BookTicketsPage() {
             await supabase.from('ticket_addOns').insert([ticketAddOnData]);
         }
         if (isGeneralAdmissionGalaGuestChecked) {
-            // Insert each gala guest
             for (const guest of galaGuests) {
                 if (guest.name && guest.email) {
                     const addOnData = {
@@ -299,7 +350,215 @@ function BookTicketsPage() {
             setGalaGuests([{id: 1, name: '', email: ''}]);
             setShowGalaGuestInfo(false);
         }
+        if (isAllAccessMasterclassChecked) {
+            const addOnData = {
+                type: "allAccessMasterclass",
+                cost: 150
+            }
 
+            const { data, error } = await supabase.from('addOns').insert([addOnData]).select();
+            if (error) {
+                console.error('Error inserting add-on:', error.message);
+                alert('Failed to book ticket. Please try again.');
+                setIsLoading(false);
+                return;
+            } else {
+                console.log('Add-On Successfully added:', data);
+                setAllAccessMasterclassChecked(false);
+            }
+
+            const addOnIden = data[0].addOnID;
+            const ticketAddOnData = {
+                ticketID: ticketId,
+                addOnID: addOnIden
+            };
+            await supabase.from('ticket_addOns').insert([ticketAddOnData]);
+            setAgentEditorPitchSessionChecked(false);
+        }
+        if (isMasterclassChecked) {
+            for (const masterclass of masterclasses) {
+                if (masterclass.className) {
+                    const addOnData = {
+                        type: "masterclass",
+                        cost: 50, // Assuming each masterclass costs $50
+                        information: {
+                            masterclass: masterclass.className
+                        }
+                    };
+
+                    const { data, error } = await supabase.from('addOns').insert([addOnData]).select();
+
+                    if (error) {
+                        console.error('Error inserting add-on:', error.message);
+                        alert('Failed to book ticket. Please try again.');
+                        setIsLoading(false);
+                        return;
+                    }
+
+                    console.log('Add-On Successfully added:', data);
+
+                    const addOnIden = data[0].addOnID;
+
+                    const ticketAddOnData = {
+                        ticketID: ticketId,
+                        addOnID: addOnIden
+                    };
+
+                    await supabase.from('ticket_addOns').insert([ticketAddOnData]);
+                }
+            }
+            setMasterclassChecked(false);
+            setShowMasterclassInfo(false);
+            setMasterclasses([{id: 1, className: ''}]);
+        }
+        if (isAgentEditorPitchSessionChecked) {
+            const addOnData = {
+                type: "agentEditorPitchSession",
+                cost: 100
+            }
+
+            const { data, error } = await supabase.from('addOns').insert([addOnData]).select();
+            if (error) {
+                console.error('Error inserting add-on:', error.message);
+                alert('Failed to book ticket. Please try again.');
+                setIsLoading(false);
+                return;
+            } else {
+                console.log('Add-On Successfully added:', data);
+                setAgentEditorPitchSessionChecked(false);
+            }
+
+            const addOnIden = data[0].addOnID;
+            const ticketAddOnData = {
+                ticketID: ticketId,
+                addOnID: addOnIden
+            };
+            await supabase.from('ticket_addOns').insert([ticketAddOnData]);
+            setAgentEditorPitchSessionChecked(false);
+        }
+        if (isTShirtChecked) {
+            if (shirtSize === '') {
+                alert('Please select a shirt size for the T-Shirt add-on.');
+                setIsLoading(false);
+                return;
+            }
+            const addOnData = {
+                type: "tShirt",
+                cost: 25,
+                information: {
+                    shirtSize: shirtSize
+                }
+            }
+
+            const { data, error } = await supabase.from('addOns').insert([addOnData]).select();
+            if (error) {
+                console.error('Error inserting add-on:', error.message);
+                alert('Failed to book ticket. Please try again.');
+                setIsLoading(false);
+                return;
+            } else {
+                console.log('Add-On Successfully added:', data);
+                setTShirtChecked(false);
+            }
+
+            const addOnIden = data[0].addOnID;
+            const ticketAddOnData = {
+                ticketID: ticketId,
+                addOnID: addOnIden
+            };
+            await supabase.from('ticket_addOns').insert([ticketAddOnData]);
+            setShirtSize('');
+            setShowShirtSizeInfo(false);
+            setTShirtChecked(false);
+        }
+        if (isLeatherNotebookChecked) {
+            const addOnData = {
+                type: "leatherNotebook",
+                cost: 35
+            }
+
+            const { data, error } = await supabase.from('addOns').insert([addOnData]).select();
+            if (error) {
+                console.error('Error inserting add-on:', error.message);
+                alert('Failed to book ticket. Please try again.');
+                setIsLoading(false);
+                return;
+            } else {
+                console.log('Add-On Successfully added:', data);
+                setLeatherNotebookChecked(false);
+            }
+
+            const addOnIden = data[0].addOnID;
+            const ticketAddOnData = {
+                ticketID: ticketId,
+                addOnID: addOnIden
+            };
+            await supabase.from('ticket_addOns').insert([ticketAddOnData]);
+            setLeatherNotebookChecked(false);
+        }
+        if (isBookVoucherChecked) {
+            if (numBookVouchers <= 0) {
+                alert('Please specify the number of book vouchers.');
+                setIsLoading(false);
+                return;
+            }
+            const addOnData = {
+                type: "bookVoucher",
+                cost: 20 * numBookVouchers,
+                information: {
+                    numBookVouchers: numBookVouchers
+                }
+            }
+
+            const { data, error } = await supabase.from('addOns').insert([addOnData]).select();
+            if (error) {
+                console.error('Error inserting add-on:', error.message);
+                alert('Failed to book ticket. Please try again.');
+                setIsLoading(false);
+                return;
+            } else {
+                console.log('Add-On Successfully added:', data);
+                setBookVoucherChecked(false);
+            }
+            const addOnIden = data[0].addOnID;
+
+            const ticketAddOnData = {
+                ticketID: ticketId,
+                addOnID: addOnIden
+            };
+            await supabase.from('ticket_addOns').insert([ticketAddOnData]);
+            setNumBookVouchers(0);
+            setShowBookVoucherInfo(false);
+            setBookVoucherChecked(false);
+        }
+        if (isEducatorBreakfastChecked) {
+            const addOnData = {
+                type: "educatorBreakfast",
+                cost: 100
+            }
+
+            const { data, error } = await supabase.from('addOns').insert([addOnData]).select();
+            if (error) {
+                console.error('Error inserting add-on:', error.message);
+                alert('Failed to book ticket. Please try again.');
+                setIsLoading(false);
+                return;
+            } else {
+                console.log('Add-On Successfully added:', data);
+                setEducatorBreakfastChecked(false);
+            }
+
+            const addOnIden = data[0].addOnID;
+
+            const ticketAddOnData = {
+                ticketID: ticketId,
+                addOnID: addOnIden
+            };
+            await supabase.from('ticket_addOns').insert([ticketAddOnData]);
+            setEducatorBreakfastChecked(false);
+        }
+
+        alert('Ticket Successfully Booked!');
         setIsLoading(false);
     }
 
@@ -386,12 +645,14 @@ function BookTicketsPage() {
                         </div>
                         <div className="form-check">
                             <input type="checkbox" className="form-check-input" id="allAccessMasterclass"
+                                checked={isAllAccessMasterclassChecked}
                                 onChange={(e) => {setAllAccessMasterclassChecked(e.target.checked)}}
                             />
                             <label className="form-check-label" htmlFor="allAccessMasterClass">All Access Masterclass Pass</label>
                         </div>
                         <div className="form-check">
                             <input type="checkbox" className="form-check-input" id="masterclass"
+                                checked={isMasterclassChecked}
                                 onChange={(e) => {
                                     setShowMasterclassInfo(e.target.checked);
                                     if (!e.target.checked) {
@@ -406,6 +667,7 @@ function BookTicketsPage() {
                     <div id="second-five-addons">
                         <div className="form-check">
                             <input type="checkbox" className="form-check-input" id="agentEditorPitchSession" 
+                                checked={isAgentEditorPitchSessionChecked}
                                 disabled={ticketType === "tweenAuthorPassMorning"}
                                 onChange={(e) => {
                                         setAgentEditorPitchSessionChecked(e.target.checked);
@@ -416,6 +678,7 @@ function BookTicketsPage() {
                         </div>
                         <div className="form-check">
                             <input type="checkbox" className="form-check-input" id="tShirt"
+                                checked={isTShirtChecked}
                                 onChange={(e) => {
                                     setShowShirtSizeInfo(e.target.checked);
                                     if (!e.target.checked) {
@@ -428,6 +691,7 @@ function BookTicketsPage() {
                         </div>
                         <div className="form-check">
                             <input type="checkbox" className="form-check-input" id="leatherNotebook"
+                                checked={isLeatherNotebookChecked}
                                 onChange={
                                     (e) => {
                                         setLeatherNotebookChecked(e.target.checked);
@@ -438,6 +702,7 @@ function BookTicketsPage() {
                         </div>
                         <div className="form-check">
                             <input type="checkbox" className="form-check-input" id="bookVoucher"
+                                checked={isBookVoucherChecked}
                                 onChange={(e) => {
                                     setShowBookVoucherInfo(e.target.checked);
                                     if (!e.target.checked) {
@@ -450,6 +715,7 @@ function BookTicketsPage() {
                         </div>
                         <div className="form-check">
                             <input type="checkbox" className="form-check-input" id="educatorBreakfast"
+                                checked={isEducatorBreakfastChecked}
                                 disabled={
                                     ticketType === "tweenAuthorPassMorning"
                                     || ticketType === "tweenAuthorPassAfternoon"
