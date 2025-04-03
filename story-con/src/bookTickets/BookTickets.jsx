@@ -261,6 +261,44 @@ function BookTicketsPage() {
 
             await supabase.from('ticket_addOns').insert([ticketAddOnData]);
         }
+        if (isGeneralAdmissionGalaGuestChecked) {
+            // Insert each gala guest
+            for (const guest of galaGuests) {
+                if (guest.name && guest.email) {
+                    const addOnData = {
+                        type: "generalAdmissionGalaGuest",
+                        cost: 50,
+                        information: {
+                            guestName: guest.name,
+                            guestEmail: guest.email
+                        }
+                    };
+
+                    const { data, error } = await supabase.from('addOns').insert([addOnData]).select();
+
+                    if (error) {
+                        console.error('Error inserting add-on:', error.message);
+                        alert('Failed to book ticket. Please try again.');
+                        setIsLoading(false);
+                        return;
+                    }
+
+                    console.log('Add-On Successfully added:', data);
+
+                    const addOnIden = data[0].addOnID;
+
+                    const ticketAddOnData = {
+                        ticketID: ticketId,
+                        addOnID: addOnIden
+                    };
+
+                    await supabase.from('ticket_addOns').insert([ticketAddOnData]);
+                }
+            }
+            setGeneralAdmissionGalaGuestChecked(false);
+            setGalaGuests([{id: 1, name: '', email: ''}]);
+            setShowGalaGuestInfo(false);
+        }
 
         setIsLoading(false);
     }
@@ -303,9 +341,10 @@ function BookTicketsPage() {
                         <div className="form-check">
                             <input type="checkbox" className="form-check-input" id="generalAdmissionGala"
                                 disabled={isVIPPlusGalaChecked}
+                                checked={isGeneralAdmissionGalaChecked}
                                 onChange={(e) => {
                                     setGeneralAdmissionGalaChecked(e.target.checked);
-
+                                    setVIPPlusGalaChecked(false);
                                     if (!e.target.checked) {
                                         setGeneralAdmissionGalaGuestChecked(false);
                                         setShowGalaGuestInfo(false);
@@ -316,12 +355,14 @@ function BookTicketsPage() {
                             <label className="form-check-label" htmlFor="generalAdmissionGala">Gala General Admission</label>
                         </div>
                         <div className="form-check">
-                            <input type="checkbox" className="form-check-input" id="vipPlusGala"
+                            <input value={isGeneralAdmissionGalaChecked} type="checkbox" className="form-check-input" id="vipPlusGala"
                                 disabled={isGeneralAdmissionGalaChecked}
+                                checked={isVIPPlusGalaChecked}
                                 onChange={(e) => {
                                     setVIPPlusGalaChecked(e.target.checked)
+                                    setGeneralAdmissionGalaChecked(false);
                                     if (!e.target.checked) {
-                                        setGeneralAdmissionGalaGuestChecked(false);
+                                        setVIPPlusGalaChecked(false);
                                         setShowGalaGuestInfo(false);
                                         setGalaGuests([]);
                                     }
@@ -330,15 +371,14 @@ function BookTicketsPage() {
                             <label className="form-check-label" htmlFor="vipPlusGala">VIP Plus Gala Admission</label>
                         </div>
                         <div className="form-check">
-                            <input type="checkbox" className="form-check-input" id="generalAdmissionGalaGuest" 
+                            <input type="checkbox" className="form-check-input" id="vipPlusGalaAdmission" 
                                 checked={isGeneralAdmissionGalaGuestChecked}
                                 onChange={(e) => {
                                     setShowGalaGuestInfo(e.target.checked);
+                                    setGeneralAdmissionGalaGuestChecked(e.target.checked);
                                     if (!e.target.checked) {
                                         setGalaGuests([]);
                                     }
-                                    setGeneralAdmissionGalaGuestChecked(e.target.checked);
-                                    setGalaGuests(e.target.checked ? [{ id: 1, name: '', email: '' }] : []);
                                 }}
                                 disabled={(!isGeneralAdmissionGalaChecked && !isVIPPlusGalaChecked)}
                             />
