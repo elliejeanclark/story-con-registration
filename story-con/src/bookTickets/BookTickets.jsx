@@ -646,13 +646,18 @@ function BookTicketsPage() {
                         <div className="form-check">
                             <input type="checkbox" className="form-check-input" id="allAccessMasterclass"
                                 checked={isAllAccessMasterclassChecked}
-                                onChange={(e) => {setAllAccessMasterclassChecked(e.target.checked)}}
+                                onChange={(e) => {
+                                    setAllAccessMasterclassChecked(e.target.checked)
+                                    setMasterclassChecked(false);
+                                    setMasterclasses([]);
+                                }}
                             />
                             <label className="form-check-label" htmlFor="allAccessMasterClass">All Access Masterclass Pass</label>
                         </div>
                         <div className="form-check">
                             <input type="checkbox" className="form-check-input" id="masterclass"
                                 checked={isMasterclassChecked}
+                                disabled={isAllAccessMasterclassChecked}
                                 onChange={(e) => {
                                     setShowMasterclassInfo(e.target.checked);
                                     if (!e.target.checked) {
