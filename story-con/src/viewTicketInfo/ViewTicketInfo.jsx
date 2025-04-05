@@ -4,7 +4,7 @@ import './ViewTicketInfo.css';
 
 const ViewTicketInfo = () => {
   const [tickets, setTickets] = useState([]);
-  const [wantShowAddOns, setWantShowAddOns] = useState(false);
+  const [visibility, setVisibility] = useState({});
 
   useEffect(() => {
     async function fetchTicketsWithAddOns() {
@@ -56,6 +56,13 @@ const ViewTicketInfo = () => {
     fetchTicketsWithAddOns();
   }, []);
 
+  const toggleVisibility = (ticketID) => {
+    setVisibility((prevState) => ({
+        ...prevState,
+        [ticketID]: !prevState[ticketID],
+    }));
+  };
+
 return (
     <div className="body">
         <div className="p-6">
@@ -83,34 +90,41 @@ return (
                                 <div id="addOnWrapper">
                                     <button
                                         id="toggleAddOnsButton"
-                                        onClick={() => setWantShowAddOns(!wantShowAddOns)} // Toggle the state for showing add-ons
+                                        onClick={() => toggleVisibility(ticket.ticketID)} // Toggle the state for showing add-ons
                                     >
-                                        {wantShowAddOns ? 'Hide AddOns' : 'Show AddOns'}
+                                        {visibility[ticket.ticketID] ? 'Hide AddOns' : 'Show AddOns'}
                                     </button>
-                                    {wantShowAddOns && (
+                                    {visibility[ticket.ticketID] && (
                                         <td className="p-3">
-                                            {ticket.addOns.length === 0 ? (
-                                                <span className="text-gray-400 italic">None</span>
-                                            ) : (
-                                                <div>
-                                                    {ticket.addOns.map((addOn, idx) => (
-                                                        <div key={idx} className="mb-3">
-                                                            <div className="font-medium">
-                                                                {addOn.type} — ${addOn.cost.toFixed(2)}
-                                                            </div>
-                                                            {addOn.information && (
-                                                                <div className="text-sm text-gray-600 pl-2 mt-2">
-                                                                    {typeof addOn.information === 'string' ? (
-                                                                        <pre className="whitespace-pre-wrap">{JSON.stringify(JSON.parse(addOn.information), null, 2)}</pre>
-                                                                    ) : (
-                                                                        <pre className="whitespace-pre-wrap">{JSON.stringify(addOn.information, null, 2)}</pre>
-                                                                    )}
-                                                                </div>
-                                                            )}
+                                        {ticket.addOns.map((addOn, idx) => (
+                                            <div key={idx} className="mb-3">
+                                            <div className="font-medium">
+                                                {addOn.type} — ${addOn.cost.toFixed(2)}
+                                            </div>
+                                            {addOn.information && (
+                                                <div className="text-sm text-gray-600 pl-2 mt-2">
+                                                {typeof addOn.information === 'object' ? (
+                                                    // If it's an object, map over its entries and display them
+                                                    <div>
+                                                    {Object.entries(addOn.information).map(([key, value], i) => (
+                                                        <div key={i} className="mb-2">
+                                                        <strong>{key}:</strong> {typeof value === 'object' ? (
+                                                            // If the value is an object itself, stringify it for display
+                                                            <pre className="whitespace-pre-wrap">{JSON.stringify(value, null, 2)}</pre>
+                                                        ) : (
+                                                            value
+                                                        )}
                                                         </div>
                                                     ))}
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-gray-400 italic">Information is not an object</span>
+                                                )}
                                                 </div>
                                             )}
+                                            </div>
+                                        ))}
+
                                         </td>
                                     )}
                                 </div>
