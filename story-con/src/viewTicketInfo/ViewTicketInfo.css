@@ -21,8 +21,53 @@
     padding-left: 2.5rem;
     padding-right: 2.5rem;
     cursor: pointer;
-    margin-top: 0.8rem;
     margin-right: 1rem;
     margin-left: 1rem;
     color: white;
+}
+
+#pageButtons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+#pageButton {
+    background-color: #3A5A78;
+    border: 1px solid black;
+    border-radius: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    cursor: pointer;
+    color: white;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+#pageNumDisplay {
+    display: flex;
+    align-items: center; /* vertically center the text */
+    justify-content: center;
+    margin-top: 2rem;
+    font-size: 1.1rem;
+}
+
+#addOnInfo {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background-color: #f0f0f0; /* light gray background for add-on info */
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 1rem;
+    margin-left: 2rem;
+    margin-right: 2rem;
+}
+
+#searchFields {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 1rem;
+    margin-left: 2rem;
+    margin-right: 2rem;
 }
